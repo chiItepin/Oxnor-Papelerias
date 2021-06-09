@@ -16,10 +16,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node_version: ${{ matrix.node_version }}
-
+      - name: Prepare The Environment
+        run: cp .env.cicd .env
       - name: run CI
-      - run: cp .env.cicd .env
-      - run: |
+        run: |
           yarn install
           yarn lint
           yarn test
