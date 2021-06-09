@@ -18,7 +18,8 @@ jobs:
           node_version: ${{ matrix.node_version }}
 
       - name: run CI
-        run: |
+      - run: cp .env.cicd .env
+      - run: |
           yarn install
           yarn lint
           yarn test
