@@ -74,17 +74,21 @@ export const categoryRef = (key: string | null = null): any =>
 
 export const categoriesRef = (): any => databaseRef.ref("categories");
 
-export const productRef = (
-  categoryKey: string,
-  key: string | null = null
-): any =>
+export const productRef = (key: string | null = null): any =>
   databaseRef.ref(
-    `products/${categoryKey}/${
-      key || databaseRef.ref().child("categories").push().key
+    `products/${key || databaseRef.ref().child("categories").push().key}`
+  );
+
+export const productsRef = (): any => databaseRef.ref("products/");
+
+export const carouselBannerRef = (key: string | null = null): any =>
+  databaseRef.ref(
+    `carrousel-banners/${
+      key || databaseRef.ref().child("carrousel-banners").push().key
     }`
   );
 
-export const productsRef = (categoryKey: string): any =>
-  databaseRef.ref(`products/${categoryKey}`);
+export const carouselBannersRef = (): any =>
+  databaseRef.ref("carrousel-banners");
 
 export default firebase;

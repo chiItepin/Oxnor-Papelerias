@@ -5,8 +5,6 @@ import {
   Button,
   toaster,
   Spinner,
-  StarIcon,
-  StarEmptyIcon,
   Avatar,
   Heading,
   Dialog,
@@ -14,45 +12,46 @@ import {
   Menu,
   MoreIcon,
   StatusIndicator,
+  Badge,
 } from "evergreen-ui";
-import { useHistory } from "react-router-dom";
-import { IProduct, productTemplate, ICategory } from "./templates";
+import { ICategory, IBanner, bannerTemplate } from "./templates";
 import {
   uploadImage,
-  productsRef,
-  productRef,
+  carouselBannerRef,
+  carouselBannersRef,
   categoriesRef,
 } from "../../firebase";
 import Sidesheet from "../../components/ui/Sidesheet";
-import ProductForm from "../../components/admin/ProductForm";
+import BannerForm from "../../components/admin/BannerForm";
 
-const Products: FunctionComponent = () => {
-  const history = useHistory();
+const Carousel: FunctionComponent = () => {
   const [searchValue, setSearchValue] = useState("");
   const [isSideSheetShown, setIsSideSheetShown] = useState(false);
   const [isDeletePromptShown, setIsDeletePromptShown] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<IProduct>({
-    ...productTemplate,
+  const [selectedBanner, setSelectedBanner] = useState<IBanner>({
+    ...bannerTemplate,
   });
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [products, setProducts] = useState<IProduct[]>([]);
+  const [banners, setBanners] = useState<IBanner[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingBanners, setLoadingBanners] = useState(true);
 
-  const resetSelectedProduct = (): void => {
-    setSelectedProduct({ ...productTemplate });
+  const resetSelectedBanner = (): void => {
+    setSelectedBanner({ ...bannerTemplate });
   };
 
-  const handleCloneProduct = (product: IProduct): void => {
-    const newProduct = product;
-    delete newProduct.key;
-    productRef()
-      .set(newProduct)
-      .then(() => {
-        toaster.success("Producto clonado con éxito");
-      })
-      .catch(() => {
-        toaster.danger("Ha ocurrido un error");
+  const getBanners = () => {
+    carouselBannersRef()
+      .orderByChild("created_at")
+      .on("value", (snapshot: any) => {
+        const updated: IBanner[] = [];
+        snapshot.forEach((item: any) => {
+          const temp = item.val();
+          temp.key = item.key;
+          updated.unshift(temp);
+        });
+        setBanners(updated);
+        setLoadingBanners(false);
       });
   };
 
@@ -70,27 +69,12 @@ const Products: FunctionComponent = () => {
       });
   };
 
-  const getProducts = () => {
-    productsRef()
-      .orderByChild("created_at")
-      .on("value", (snapshot: any) => {
-        const updated: IProduct[] = [];
-        snapshot.forEach((item: any) => {
-          const temp = item.val();
-          temp.key = item.key;
-          updated.unshift(temp);
-        });
-        setProducts(updated);
-        setLoadingProducts(false);
-      });
-  };
-
-  const handleImageUpload = (file: FileList): void => {
+  const handleImageUpload = (file: FileList) => {
     if (file?.length) {
       setLoading(true);
       uploadImage(file[0], Date.now()).then((response: any) => {
         response.ref.getDownloadURL().then((url: any) => {
-          setSelectedProduct((prevState: any) => ({
+          setSelectedBanner((prevState: any) => ({
             ...prevState,
             image: url,
           }));
@@ -100,11 +84,11 @@ const Products: FunctionComponent = () => {
     }
   };
 
-  const deleteProduct = () => {
-    productRef(selectedProduct.key)
+  const deleteBanner = () => {
+    carouselBannerRef(selectedBanner.key)
       .remove()
       .then(() => {
-        toaster.success("Producto eliminado con éxito");
+        toaster.success("Banner eliminado con éxito");
         setIsDeletePromptShown(false);
       })
       .catch(() => {
@@ -112,16 +96,16 @@ const Products: FunctionComponent = () => {
       });
   };
 
-  const submitProduct = () => {
-    productRef(selectedProduct?.key ? selectedProduct.key : null)
-      .set(selectedProduct)
+  const submitBanner = () => {
+    carouselBannerRef(selectedBanner?.key ? selectedBanner.key : null)
+      .set(selectedBanner)
       .then(() => {
-        if (selectedProduct?.key) {
-          toaster.success("Producto actualizado con éxito");
+        if (selectedBanner?.key) {
+          toaster.success("Banner actualizado con éxito");
         } else {
-          toaster.success("Producto creado con éxito");
+          toaster.success("Banner creado con éxito");
         }
-        resetSelectedProduct();
+        resetSelectedBanner();
         setIsSideSheetShown(false);
       })
       .catch(() => {
@@ -129,21 +113,21 @@ const Products: FunctionComponent = () => {
       });
   };
 
-  const handleSearch = (): IProduct[] =>
-    products.filter((item) =>
+  const handleSearch = (): IBanner[] =>
+    banners.filter((item) =>
       item.name.toLowerCase().includes(searchValue.toLowerCase())
     );
 
   useEffect(() => {
-    getProducts();
+    getBanners();
     getCategories();
     return () => {
-      productsRef().off();
+      carouselBannersRef().off();
       categoriesRef().off();
     };
-  }, [history]);
+  }, []);
 
-  if (loadingProducts) {
+  if (loadingBanners) {
     return <Spinner margin="auto" />;
   }
 
@@ -151,26 +135,26 @@ const Products: FunctionComponent = () => {
     <Pane textAlign="left">
       <Dialog
         isShown={isDeletePromptShown}
-        title="Eliminar producto"
+        title="Eliminar Banner"
         intent="danger"
         onCloseComplete={() => setIsDeletePromptShown(false)}
         cancelLabel="Cancelar"
         confirmLabel="Eliminar"
-        onConfirm={() => deleteProduct()}
+        onConfirm={() => deleteBanner()}
       >
-        Estás seguro que deseas eliminar {selectedProduct?.name}
+        Estás seguro que deseas eliminar {selectedBanner?.name}
       </Dialog>
       <Sidesheet
-        title={selectedProduct?.key ? "Editar Producto" : "Añadir Producto"}
+        title={selectedBanner?.key ? "Editar Banner" : "Añadir Banner"}
         isShown={isSideSheetShown}
         handleOnClose={() => {
           setIsSideSheetShown(false);
         }}
       >
-        <ProductForm
-          product={selectedProduct}
-          submitProduct={submitProduct}
-          setSelectedProduct={setSelectedProduct}
+        <BannerForm
+          banner={selectedBanner}
+          submitBanner={submitBanner}
+          setSelectedBanner={setSelectedBanner}
           handleImageUpload={handleImageUpload}
           loading={loading}
           categories={categories}
@@ -185,14 +169,14 @@ const Products: FunctionComponent = () => {
       >
         <Button
           onClick={() => {
-            resetSelectedProduct();
+            resetSelectedBanner();
             setIsSideSheetShown(true);
           }}
         >
-          Añadir nuevo producto
+          Añadir banner a un Carrusel
         </Button>
 
-        <Heading>Productos</Heading>
+        <Heading>Carrusel</Heading>
       </Pane>
 
       <Table>
@@ -203,8 +187,7 @@ const Products: FunctionComponent = () => {
             placeholder="Buscar..."
           />
           <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Destacado</Table.TextHeaderCell>
+          <Table.TextHeaderCell>Posición</Table.TextHeaderCell>
           <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
         </Table.Head>
         {handleSearch().length === 0 && (
@@ -218,26 +201,26 @@ const Products: FunctionComponent = () => {
           allowAutoHeight
           useAverageAutoHeightEstimation
         >
-          {handleSearch().map((product) => (
-            <Table.Row key={product.key}>
+          {handleSearch().map((banner) => (
+            <Table.Row key={banner.key}>
               <Table.TextCell>
                 <Avatar
-                  src={product.image ? product.image : undefined}
-                  name={product.name}
+                  src={banner.image ? banner.image : undefined}
+                  name={banner.name}
                   size={30}
                 />
               </Table.TextCell>
+
               <Table.TextCell>
-                <StatusIndicator
-                  color={product?.active ? "success" : "warning"}
-                >
-                  {product.name}
+                <StatusIndicator color={banner?.active ? "success" : "warning"}>
+                  {banner.name}
                 </StatusIndicator>
               </Table.TextCell>
-              <Table.TextCell>{product.description}</Table.TextCell>
+
               <Table.TextCell>
-                {product.featured ? <StarIcon /> : <StarEmptyIcon />}
+                <Badge color="neutral">{banner.type}</Badge>
               </Table.TextCell>
+
               <Table.TextCell>
                 <Popover
                   content={
@@ -245,7 +228,7 @@ const Products: FunctionComponent = () => {
                       <Menu.Group>
                         <Menu.Item
                           onSelect={() => {
-                            setSelectedProduct(product);
+                            setSelectedBanner(banner);
                             setIsSideSheetShown(true);
                           }}
                         >
@@ -253,15 +236,8 @@ const Products: FunctionComponent = () => {
                         </Menu.Item>
                         <Menu.Item
                           onSelect={() => {
-                            handleCloneProduct(product);
-                          }}
-                        >
-                          Clonar
-                        </Menu.Item>
-                        <Menu.Item
-                          onSelect={() => {
                             setIsDeletePromptShown(true);
-                            setSelectedProduct(product);
+                            setSelectedBanner(banner);
                           }}
                         >
                           Eliminar
@@ -283,4 +259,4 @@ const Products: FunctionComponent = () => {
   );
 };
 
-export default Products;
+export default Carousel;

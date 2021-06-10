@@ -24,6 +24,7 @@ export interface IProduct {
   quantity: string;
   tags: [];
   active: boolean;
+  categories: string[];
   key?: string;
 }
 
@@ -36,6 +37,28 @@ export const productTemplate: IProduct = {
   discountedPrice: "",
   quantity: "",
   shippingPrice: "",
+  categories: [],
   tags: [],
+  active: false,
+};
+
+export interface IBanner {
+  name: string;
+  image: string | null;
+  buttonName: string;
+  buttonLink: string;
+  type: "carousel" | "home-middle" | "category-view";
+  categories: [];
+  active: boolean;
+  key?: string;
+}
+
+export const bannerTemplate: IBanner = {
+  name: "",
+  buttonName: "",
+  buttonLink: "",
+  image: null,
+  type: "carousel",
+  categories: [],
   active: false,
 };

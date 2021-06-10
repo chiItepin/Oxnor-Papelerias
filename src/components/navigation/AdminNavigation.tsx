@@ -22,6 +22,18 @@ const AdminNavigation: FunctionComponent = () => {
       {user && (
         <Pane justifySelf="flex-end">
           <Button
+            onClick={() => history.push("/admin/carrusel")}
+            appearance={
+              history.location.pathname === "/admin/carrusel"
+                ? "primary"
+                : "minimal"
+            }
+            marginRight={16}
+          >
+            Carrusel
+          </Button>
+
+          <Button
             onClick={() => history.push("/admin/categorias")}
             appearance={
               history.location.pathname === "/admin/categorias"
@@ -31,6 +43,18 @@ const AdminNavigation: FunctionComponent = () => {
             marginRight={16}
           >
             Categorías
+          </Button>
+
+          <Button
+            onClick={() => history.push("/admin/productos")}
+            appearance={
+              history.location.pathname === "/admin/productos"
+                ? "primary"
+                : "minimal"
+            }
+            marginRight={16}
+          >
+            Productos
           </Button>
 
           <Button

@@ -9,8 +9,10 @@ import {
   Textarea,
   Label,
   TagInput,
+  Heading,
+  Text,
 } from "evergreen-ui";
-import { IProduct } from "../../containers/admin/templates";
+import { IProduct, ICategory } from "../../containers/admin/templates";
 
 interface IProps {
   product: IProduct;
@@ -20,6 +22,7 @@ interface IProps {
     | ((x: (prevState: any) => void | IProduct) => void);
   handleImageUpload: (file: FileList) => void;
   loading: boolean;
+  categories: ICategory[];
 }
 
 const ProductForm: FunctionComponent<IProps> = ({
@@ -28,6 +31,7 @@ const ProductForm: FunctionComponent<IProps> = ({
   setSelectedProduct,
   handleImageUpload,
   loading,
+  categories,
 }: IProps) => {
   const handleUserInput = (
     property: string,
@@ -36,6 +40,20 @@ const ProductForm: FunctionComponent<IProps> = ({
     setSelectedProduct((prevState: any) => ({
       ...prevState,
       [property]: value,
+    }));
+  };
+
+  const handleCategories = (value: string | undefined, type: boolean) => {
+    let updated = [...product.categories];
+    if (type && value) {
+      updated.push(value);
+    } else if (value) {
+      updated = updated.filter((item) => item !== value);
+    }
+
+    setSelectedProduct((prevState: any) => ({
+      ...prevState,
+      categories: updated,
     }));
   };
   return (
@@ -116,6 +134,7 @@ const ProductForm: FunctionComponent<IProps> = ({
           placeholder="Imagen"
         />
       </Pane>
+
       <Pane>
         <Checkbox
           label="¿Producto destacado?"
@@ -125,6 +144,7 @@ const ProductForm: FunctionComponent<IProps> = ({
           }
         />
       </Pane>
+
       <Pane>
         <Checkbox
           label="¿Producto habilitado?"
@@ -134,7 +154,26 @@ const ProductForm: FunctionComponent<IProps> = ({
           }
         />
       </Pane>
+
+      <Pane background="white" marginY={15} padding={10} elevation={1}>
+        <Heading>Categorías</Heading>
+        {categories.map((category) => (
+          <Checkbox
+            key={category.key}
+            label={category.name}
+            checked={
+              category.key ? !!product.categories.includes(category.key) : false
+            }
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              handleCategories(category.key, event.target.checked)
+            }
+          />
+        ))}
+      </Pane>
+
       <Pane>
+        <Text>Utiliza etiquetas para mostrar productos similares</Text>
+
         <TagInput
           tagProps={{
             margin: 3,
@@ -144,9 +183,10 @@ const ProductForm: FunctionComponent<IProps> = ({
           inputProps={{ placeholder: "Añadir etiqueta..." }}
           values={product.tags}
           onChange={(values: string[]) => handleUserInput("tags", values)}
-          marginBottom={20}
+          marginBottom={10}
         />
       </Pane>
+
       <Pane textAlign="center">
         <Button
           disabled={!product.name || !product.price || loading}

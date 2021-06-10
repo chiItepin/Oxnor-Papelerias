@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import {
   Table,
   Pane,
@@ -30,7 +29,6 @@ const Categories: FunctionComponent = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
-  const history = useHistory();
 
   const resetSelectedCategory = (): void => {
     setSelectedCategory({ ...categoryTemplate });
@@ -200,13 +198,6 @@ const Categories: FunctionComponent = () => {
                   content={
                     <Menu>
                       <Menu.Group>
-                        <Menu.Item
-                          onSelect={() =>
-                            history.push(`/admin/categorias/${category.key}`)
-                          }
-                        >
-                          Ver productos
-                        </Menu.Item>
                         <Menu.Item
                           onSelect={() => {
                             setSelectedCategory(category);
