@@ -6,7 +6,7 @@ module.exports = {
     "plugin:jest/recommended",
     "plugin:prettier/recommended",
   ],
-  plugins: ["react", "@typescript-eslint", "jest"],
+  plugins: ["react", "@typescript-eslint", "jest", "react-hooks"],
   env: {
     browser: true,
     es6: true,
@@ -27,6 +27,7 @@ module.exports = {
   },
   rules: {
     "linebreak-style": "off",
+    "react-hooks/exhaustive-deps": "warn",
     "prettier/prettier": [
       "error",
       {

@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import {
   Table,
   Pane,
@@ -14,49 +13,82 @@ import {
   Popover,
   Menu,
   MoreIcon,
+  StatusIndicator,
 } from "evergreen-ui";
-import { categoryTemplate, ICategory } from "./templates";
-import { categoryRef, uploadImage, categoriesRef } from "../../firebase";
+import { useParams, useHistory } from "react-router-dom";
+import {
+  categoryTemplate,
+  ICategory,
+  IProduct,
+  productTemplate,
+} from "./templates";
+import {
+  categoryRef,
+  uploadImage,
+  productsRef,
+  productRef,
+} from "../../firebase";
 import Sidesheet from "../../components/ui/Sidesheet";
-import CategoryForm from "../../components/admin/CategoryForm";
+import ProductForm from "../../components/admin/ProductForm";
 
-const Categories: FunctionComponent = () => {
+interface IParamTypes {
+  key: string;
+}
+
+const Products: FunctionComponent = () => {
+  const { key } = useParams<IParamTypes>();
+  const history = useHistory();
   const [searchValue, setSearchValue] = useState("");
   const [isSideSheetShown, setIsSideSheetShown] = useState(false);
   const [isDeletePromptShown, setIsDeletePromptShown] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ICategory>({
     ...categoryTemplate,
   });
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct>({
+    ...productTemplate,
+  });
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const history = useHistory();
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
-  const resetSelectedCategory = (): void => {
-    setSelectedCategory({ ...categoryTemplate });
+  const resetSelectedProduct = (): void => {
+    setSelectedProduct({ ...productTemplate });
   };
 
-  const getCategories = () => {
-    categoriesRef()
+  const handleCloneProduct = (product: IProduct): void => {
+    const newProduct = product;
+    delete newProduct.key;
+    productRef(key)
+      .set(newProduct)
+      .then(() => {
+        toaster.success("Producto clonado con éxito");
+      })
+      .catch(() => {
+        toaster.danger("Ha ocurrido un error");
+      });
+  };
+
+  const getProducts = (categoryKey: string) => {
+    productsRef(categoryKey)
       .orderByChild("created_at")
       .on("value", (snapshot: any) => {
-        const updated: ICategory[] = [];
+        const updated: IProduct[] = [];
         snapshot.forEach((item: any) => {
           const temp = item.val();
           temp.key = item.key;
           updated.unshift(temp);
         });
-        setCategories(updated);
-        setLoadingCategories(false);
+        setProducts(updated);
+        setLoadingProducts(false);
       });
   };
 
-  const handleImageUpload = (file: FileList) => {
+  const handleImageUpload = (file: FileList): void => {
     if (file?.length) {
       setLoading(true);
       uploadImage(file[0], Date.now()).then((response: any) => {
         response.ref.getDownloadURL().then((url: any) => {
-          setSelectedCategory((prevState: any) => ({
+          setSelectedProduct((prevState: any) => ({
             ...prevState,
             image: url,
           }));
@@ -66,11 +98,11 @@ const Categories: FunctionComponent = () => {
     }
   };
 
-  const deleteCategory = () => {
-    categoryRef(selectedCategory.key)
+  const deleteProduct = () => {
+    productRef(key, selectedProduct.key)
       .remove()
       .then(() => {
-        toaster.success("Categoría eliminada con éxito");
+        toaster.success("Producto eliminado con éxito");
         setIsDeletePromptShown(false);
       })
       .catch(() => {
@@ -78,16 +110,16 @@ const Categories: FunctionComponent = () => {
       });
   };
 
-  const submitCategory = () => {
-    categoryRef(selectedCategory?.key ? selectedCategory.key : null)
-      .set(selectedCategory)
+  const submitProduct = () => {
+    productRef(key, selectedProduct?.key ? selectedProduct.key : null)
+      .set(selectedProduct)
       .then(() => {
-        if (selectedCategory?.key) {
-          toaster.success("Categoría actualizada con éxito");
+        if (selectedProduct?.key) {
+          toaster.success("Producto actualizado con éxito");
         } else {
-          toaster.success("Categoría creada con éxito");
+          toaster.success("Producto creado con éxito");
         }
-        resetSelectedCategory();
+        resetSelectedProduct();
         setIsSideSheetShown(false);
       })
       .catch(() => {
@@ -95,19 +127,31 @@ const Categories: FunctionComponent = () => {
       });
   };
 
-  const handleSearch = (): ICategory[] =>
-    categories.filter((item) =>
+  const handleSearch = (): IProduct[] =>
+    products.filter((item) =>
       item.name.toLowerCase().includes(searchValue.toLowerCase())
     );
 
   useEffect(() => {
-    getCategories();
-    return () => {
-      categoriesRef().off();
+    const getParentCategory = (categoryKey: string): void => {
+      categoryRef(categoryKey)
+        .orderByChild("created_at")
+        .on("value", (snapshot: any) => {
+          if (!snapshot.val()) {
+            history.push("/admin/categorias");
+          }
+          setSelectedCategory(snapshot.val());
+        });
     };
-  }, []);
 
-  if (loadingCategories) {
+    getParentCategory(key);
+    getProducts(key);
+    return () => {
+      productsRef(key).off();
+    };
+  }, [key, history]);
+
+  if (loadingProducts) {
     return <Spinner margin="auto" />;
   }
 
@@ -115,26 +159,26 @@ const Categories: FunctionComponent = () => {
     <Pane textAlign="left">
       <Dialog
         isShown={isDeletePromptShown}
-        title="Eliminar Categoría"
+        title="Eliminar producto"
         intent="danger"
         onCloseComplete={() => setIsDeletePromptShown(false)}
         cancelLabel="Cancelar"
         confirmLabel="Eliminar"
-        onConfirm={() => deleteCategory()}
+        onConfirm={() => deleteProduct()}
       >
-        Estás seguro que deseas eliminar {selectedCategory?.name}
+        Estás seguro que deseas eliminar {selectedProduct?.name}
       </Dialog>
       <Sidesheet
-        title={selectedCategory?.key ? "Editar Categoría" : "Añadir Categoría"}
+        title={selectedProduct?.key ? "Editar Producto" : "Añadir Producto"}
         isShown={isSideSheetShown}
         handleOnClose={() => {
           setIsSideSheetShown(false);
         }}
       >
-        <CategoryForm
-          category={selectedCategory}
-          submitCategory={submitCategory}
-          setCategory={setSelectedCategory}
+        <ProductForm
+          product={selectedProduct}
+          submitProduct={submitProduct}
+          setSelectedProduct={setSelectedProduct}
           handleImageUpload={handleImageUpload}
           loading={loading}
         />
@@ -148,14 +192,14 @@ const Categories: FunctionComponent = () => {
       >
         <Button
           onClick={() => {
-            resetSelectedCategory();
+            resetSelectedProduct();
             setIsSideSheetShown(true);
           }}
         >
-          Añadir nueva categoría
+          Añadir nuevo producto
         </Button>
 
-        <Heading>Categorías</Heading>
+        <Heading>{`${selectedCategory?.name} - Productos`}</Heading>
       </Pane>
 
       <Table>
@@ -167,7 +211,7 @@ const Categories: FunctionComponent = () => {
           />
           <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
           <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Destacada</Table.TextHeaderCell>
+          <Table.TextHeaderCell>Destacado</Table.TextHeaderCell>
           <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
         </Table.Head>
         {handleSearch().length === 0 && (
@@ -181,19 +225,25 @@ const Categories: FunctionComponent = () => {
           allowAutoHeight
           useAverageAutoHeightEstimation
         >
-          {handleSearch().map((category) => (
-            <Table.Row key={category.key}>
+          {handleSearch().map((product) => (
+            <Table.Row key={product.key}>
               <Table.TextCell>
                 <Avatar
-                  src={category.image ? category.image : undefined}
-                  name={category.name}
+                  src={product.image ? product.image : undefined}
+                  name={product.name}
                   size={30}
                 />
               </Table.TextCell>
-              <Table.TextCell>{category.name}</Table.TextCell>
-              <Table.TextCell>{category.description}</Table.TextCell>
               <Table.TextCell>
-                {category.featured ? <StarIcon /> : <StarEmptyIcon />}
+                <StatusIndicator
+                  color={product?.active ? "success" : "warning"}
+                >
+                  {product.name}
+                </StatusIndicator>
+              </Table.TextCell>
+              <Table.TextCell>{product.description}</Table.TextCell>
+              <Table.TextCell>
+                {product.featured ? <StarIcon /> : <StarEmptyIcon />}
               </Table.TextCell>
               <Table.TextCell>
                 <Popover
@@ -201,15 +251,8 @@ const Categories: FunctionComponent = () => {
                     <Menu>
                       <Menu.Group>
                         <Menu.Item
-                          onSelect={() =>
-                            history.push(`/admin/categorias/${category.key}`)
-                          }
-                        >
-                          Ver productos
-                        </Menu.Item>
-                        <Menu.Item
                           onSelect={() => {
-                            setSelectedCategory(category);
+                            setSelectedProduct(product);
                             setIsSideSheetShown(true);
                           }}
                         >
@@ -217,8 +260,15 @@ const Categories: FunctionComponent = () => {
                         </Menu.Item>
                         <Menu.Item
                           onSelect={() => {
+                            handleCloneProduct(product);
+                          }}
+                        >
+                          Clonar
+                        </Menu.Item>
+                        <Menu.Item
+                          onSelect={() => {
                             setIsDeletePromptShown(true);
-                            setSelectedCategory(category);
+                            setSelectedProduct(product);
                           }}
                         >
                           Eliminar
@@ -240,4 +290,4 @@ const Categories: FunctionComponent = () => {
   );
 };
 
-export default Categories;
+export default Products;

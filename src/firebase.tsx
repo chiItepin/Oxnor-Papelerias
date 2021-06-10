@@ -67,11 +67,24 @@ export const uploadImage = (image: any, timestamp: number): any =>
 
 const databaseRef = firebase.database();
 
-export const categoryRef = (uid = null): any =>
+export const categoryRef = (key: string | null = null): any =>
   databaseRef.ref(
-    `categories/${uid || databaseRef.ref().child("categories").push().key}`
+    `categories/${key || databaseRef.ref().child("categories").push().key}`
   );
 
 export const categoriesRef = (): any => databaseRef.ref("categories");
+
+export const productRef = (
+  categoryKey: string,
+  key: string | null = null
+): any =>
+  databaseRef.ref(
+    `products/${categoryKey}/${
+      key || databaseRef.ref().child("categories").push().key
+    }`
+  );
+
+export const productsRef = (categoryKey: string): any =>
+  databaseRef.ref(`products/${categoryKey}`);
 
 export default firebase;

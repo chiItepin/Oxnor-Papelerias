@@ -11,7 +11,7 @@ import { ICategory } from "../../containers/admin/templates";
 
 interface IProps {
   category: ICategory;
-  createCategory: () => void;
+  submitCategory: () => void;
   setCategory:
     | React.Dispatch<React.SetStateAction<ICategory>>
     | ((x: (prevState: any) => void | ICategory) => void);
@@ -21,7 +21,7 @@ interface IProps {
 
 const CategoryForm: FunctionComponent<IProps> = ({
   category,
-  createCategory,
+  submitCategory,
   setCategory,
   handleImageUpload,
   loading,
@@ -83,7 +83,7 @@ const CategoryForm: FunctionComponent<IProps> = ({
       <Pane textAlign="center">
         <Button
           disabled={!category.name || loading}
-          onClick={createCategory}
+          onClick={submitCategory}
           appearance="primary"
         >
           Guardar
