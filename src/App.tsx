@@ -4,6 +4,7 @@ import "./App.css";
 import Navigation from "./components/navigation/Navigation";
 import AdminNavigation from "./components/navigation/AdminNavigation";
 import Routes from "./Routes";
+import Footer from "./components/ui/Footer";
 
 const App: FunctionComponent = () => {
   const location = useLocation();
@@ -15,9 +16,9 @@ const App: FunctionComponent = () => {
         <Navigation />
       )}
 
-      <main>
-        <Routes />
-      </main>
+      <Routes />
+
+      <Footer />
     </div>
   );
 };

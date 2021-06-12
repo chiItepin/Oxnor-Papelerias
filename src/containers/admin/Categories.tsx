@@ -110,124 +110,128 @@ const Categories: FunctionComponent = () => {
   }
 
   return (
-    <Pane textAlign="left">
-      <Dialog
-        isShown={isDeletePromptShown}
-        title="Eliminar Categoría"
-        intent="danger"
-        onCloseComplete={() => setIsDeletePromptShown(false)}
-        cancelLabel="Cancelar"
-        confirmLabel="Eliminar"
-        onConfirm={() => deleteCategory()}
-      >
-        Estás seguro que deseas eliminar {selectedCategory?.name}
-      </Dialog>
-      <Sidesheet
-        title={selectedCategory?.key ? "Editar Categoría" : "Añadir Categoría"}
-        isShown={isSideSheetShown}
-        handleOnClose={() => {
-          setIsSideSheetShown(false);
-        }}
-      >
-        <CategoryForm
-          category={selectedCategory}
-          submitCategory={submitCategory}
-          setCategory={setSelectedCategory}
-          handleImageUpload={handleImageUpload}
-          loading={loading}
-        />
-      </Sidesheet>
-
-      <Pane
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        marginBottom={10}
-      >
-        <Button
-          onClick={() => {
-            resetSelectedCategory();
-            setIsSideSheetShown(true);
+    <main>
+      <Pane textAlign="left">
+        <Dialog
+          isShown={isDeletePromptShown}
+          title="Eliminar Categoría"
+          intent="danger"
+          onCloseComplete={() => setIsDeletePromptShown(false)}
+          cancelLabel="Cancelar"
+          confirmLabel="Eliminar"
+          onConfirm={() => deleteCategory()}
+        >
+          Estás seguro que deseas eliminar {selectedCategory?.name}
+        </Dialog>
+        <Sidesheet
+          title={
+            selectedCategory?.key ? "Editar Categoría" : "Añadir Categoría"
+          }
+          isShown={isSideSheetShown}
+          handleOnClose={() => {
+            setIsSideSheetShown(false);
           }}
         >
-          Añadir nueva categoría
-        </Button>
-
-        <Heading>Categorías</Heading>
-      </Pane>
-
-      <Table>
-        <Table.Head>
-          <Table.SearchHeaderCell
-            value={searchValue}
-            onChange={(event) => setSearchValue(event)}
-            placeholder="Buscar..."
+          <CategoryForm
+            category={selectedCategory}
+            submitCategory={submitCategory}
+            setCategory={setSelectedCategory}
+            handleImageUpload={handleImageUpload}
+            loading={loading}
           />
-          <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Destacada</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
-        </Table.Head>
-        {handleSearch().length === 0 && (
-          <Heading marginTop={10} textAlign="center">
-            Datos no encontrados
-          </Heading>
-        )}
-        <Table.VirtualBody
-          minHeight={400}
-          height="auto"
-          allowAutoHeight
-          useAverageAutoHeightEstimation
+        </Sidesheet>
+
+        <Pane
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={10}
         >
-          {handleSearch().map((category) => (
-            <Table.Row key={category.key}>
-              <Table.TextCell>
-                <Avatar
-                  src={category.image ? category.image : undefined}
-                  name={category.name}
-                  size={30}
-                />
-              </Table.TextCell>
-              <Table.TextCell>{category.name}</Table.TextCell>
-              <Table.TextCell>{category.description}</Table.TextCell>
-              <Table.TextCell>
-                {category.featured ? <StarIcon /> : <StarEmptyIcon />}
-              </Table.TextCell>
-              <Table.TextCell>
-                <Popover
-                  content={
-                    <Menu>
-                      <Menu.Group>
-                        <Menu.Item
-                          onSelect={() => {
-                            setSelectedCategory(category);
-                            setIsSideSheetShown(true);
-                          }}
-                        >
-                          Editar
-                        </Menu.Item>
-                        <Menu.Item
-                          onSelect={() => {
-                            setIsDeletePromptShown(true);
-                            setSelectedCategory(category);
-                          }}
-                        >
-                          Eliminar
-                        </Menu.Item>
-                      </Menu.Group>
-                    </Menu>
-                  }
-                >
-                  <Button>
-                    <MoreIcon />
-                  </Button>
-                </Popover>
-              </Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.VirtualBody>
-      </Table>
-    </Pane>
+          <Button
+            onClick={() => {
+              resetSelectedCategory();
+              setIsSideSheetShown(true);
+            }}
+          >
+            Añadir nueva categoría
+          </Button>
+
+          <Heading>Categorías</Heading>
+        </Pane>
+
+        <Table>
+          <Table.Head>
+            <Table.SearchHeaderCell
+              value={searchValue}
+              onChange={(event) => setSearchValue(event)}
+              placeholder="Buscar..."
+            />
+            <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Destacada</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
+          </Table.Head>
+          {handleSearch().length === 0 && (
+            <Heading marginTop={10} textAlign="center">
+              Datos no encontrados
+            </Heading>
+          )}
+          <Table.VirtualBody
+            minHeight={400}
+            height="auto"
+            allowAutoHeight
+            useAverageAutoHeightEstimation
+          >
+            {handleSearch().map((category) => (
+              <Table.Row key={category.key}>
+                <Table.TextCell>
+                  <Avatar
+                    src={category.image ? category.image : undefined}
+                    name={category.name}
+                    size={30}
+                  />
+                </Table.TextCell>
+                <Table.TextCell>{category.name}</Table.TextCell>
+                <Table.TextCell>{category.description}</Table.TextCell>
+                <Table.TextCell>
+                  {category.featured ? <StarIcon /> : <StarEmptyIcon />}
+                </Table.TextCell>
+                <Table.TextCell>
+                  <Popover
+                    content={
+                      <Menu>
+                        <Menu.Group>
+                          <Menu.Item
+                            onSelect={() => {
+                              setSelectedCategory(category);
+                              setIsSideSheetShown(true);
+                            }}
+                          >
+                            Editar
+                          </Menu.Item>
+                          <Menu.Item
+                            onSelect={() => {
+                              setIsDeletePromptShown(true);
+                              setSelectedCategory(category);
+                            }}
+                          >
+                            Eliminar
+                          </Menu.Item>
+                        </Menu.Group>
+                      </Menu>
+                    }
+                  >
+                    <Button>
+                      <MoreIcon />
+                    </Button>
+                  </Popover>
+                </Table.TextCell>
+              </Table.Row>
+            ))}
+          </Table.VirtualBody>
+        </Table>
+      </Pane>
+    </main>
   );
 };
 

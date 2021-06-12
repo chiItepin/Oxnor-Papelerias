@@ -41,6 +41,7 @@ const Carousel: FunctionComponent = () => {
   };
 
   const getBanners = () => {
+    setLoadingBanners(true);
     carouselBannersRef()
       .orderByChild("created_at")
       .on("value", (snapshot: any) => {
@@ -132,130 +133,134 @@ const Carousel: FunctionComponent = () => {
   }
 
   return (
-    <Pane textAlign="left">
-      <Dialog
-        isShown={isDeletePromptShown}
-        title="Eliminar Banner"
-        intent="danger"
-        onCloseComplete={() => setIsDeletePromptShown(false)}
-        cancelLabel="Cancelar"
-        confirmLabel="Eliminar"
-        onConfirm={() => deleteBanner()}
-      >
-        Estás seguro que deseas eliminar {selectedBanner?.name}
-      </Dialog>
-      <Sidesheet
-        title={selectedBanner?.key ? "Editar Banner" : "Añadir Banner"}
-        isShown={isSideSheetShown}
-        handleOnClose={() => {
-          setIsSideSheetShown(false);
-        }}
-      >
-        <BannerForm
-          banner={selectedBanner}
-          submitBanner={submitBanner}
-          setSelectedBanner={setSelectedBanner}
-          handleImageUpload={handleImageUpload}
-          loading={loading}
-          categories={categories}
-        />
-      </Sidesheet>
-
-      <Pane
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        marginBottom={10}
-      >
-        <Button
-          onClick={() => {
-            resetSelectedBanner();
-            setIsSideSheetShown(true);
+    <main>
+      <Pane textAlign="left">
+        <Dialog
+          isShown={isDeletePromptShown}
+          title="Eliminar Banner"
+          intent="danger"
+          onCloseComplete={() => setIsDeletePromptShown(false)}
+          cancelLabel="Cancelar"
+          confirmLabel="Eliminar"
+          onConfirm={() => deleteBanner()}
+        >
+          Estás seguro que deseas eliminar {selectedBanner?.name}
+        </Dialog>
+        <Sidesheet
+          title={selectedBanner?.key ? "Editar Banner" : "Añadir Banner"}
+          isShown={isSideSheetShown}
+          handleOnClose={() => {
+            setIsSideSheetShown(false);
           }}
         >
-          Añadir banner a un Carrusel
-        </Button>
-
-        <Heading>Carrusel</Heading>
-      </Pane>
-
-      <Table>
-        <Table.Head>
-          <Table.SearchHeaderCell
-            value={searchValue}
-            onChange={(event) => setSearchValue(event)}
-            placeholder="Buscar..."
+          <BannerForm
+            banner={selectedBanner}
+            submitBanner={submitBanner}
+            setSelectedBanner={setSelectedBanner}
+            handleImageUpload={handleImageUpload}
+            loading={loading}
+            categories={categories}
           />
-          <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Posición</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
-        </Table.Head>
-        {handleSearch().length === 0 && (
-          <Heading marginTop={10} textAlign="center">
-            Datos no encontrados
-          </Heading>
-        )}
-        <Table.VirtualBody
-          minHeight={400}
-          height="auto"
-          allowAutoHeight
-          useAverageAutoHeightEstimation
+        </Sidesheet>
+
+        <Pane
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={10}
         >
-          {handleSearch().map((banner) => (
-            <Table.Row key={banner.key}>
-              <Table.TextCell>
-                <Avatar
-                  src={banner.image ? banner.image : undefined}
-                  name={banner.name}
-                  size={30}
-                />
-              </Table.TextCell>
+          <Button
+            onClick={() => {
+              resetSelectedBanner();
+              setIsSideSheetShown(true);
+            }}
+          >
+            Añadir banner a un Carrusel
+          </Button>
 
-              <Table.TextCell>
-                <StatusIndicator color={banner?.active ? "success" : "warning"}>
-                  {banner.name}
-                </StatusIndicator>
-              </Table.TextCell>
+          <Heading>Carrusel</Heading>
+        </Pane>
 
-              <Table.TextCell>
-                <Badge color="neutral">{banner.type}</Badge>
-              </Table.TextCell>
+        <Table>
+          <Table.Head>
+            <Table.SearchHeaderCell
+              value={searchValue}
+              onChange={(event) => setSearchValue(event)}
+              placeholder="Buscar..."
+            />
+            <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Posición</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
+          </Table.Head>
+          {handleSearch().length === 0 && (
+            <Heading marginTop={10} textAlign="center">
+              Datos no encontrados
+            </Heading>
+          )}
+          <Table.VirtualBody
+            minHeight={400}
+            height="auto"
+            allowAutoHeight
+            useAverageAutoHeightEstimation
+          >
+            {handleSearch().map((banner) => (
+              <Table.Row key={banner.key}>
+                <Table.TextCell>
+                  <Avatar
+                    src={banner.image ? banner.image : undefined}
+                    name={banner.name}
+                    size={30}
+                  />
+                </Table.TextCell>
 
-              <Table.TextCell>
-                <Popover
-                  content={
-                    <Menu>
-                      <Menu.Group>
-                        <Menu.Item
-                          onSelect={() => {
-                            setSelectedBanner(banner);
-                            setIsSideSheetShown(true);
-                          }}
-                        >
-                          Editar
-                        </Menu.Item>
-                        <Menu.Item
-                          onSelect={() => {
-                            setIsDeletePromptShown(true);
-                            setSelectedBanner(banner);
-                          }}
-                        >
-                          Eliminar
-                        </Menu.Item>
-                      </Menu.Group>
-                    </Menu>
-                  }
-                >
-                  <Button>
-                    <MoreIcon />
-                  </Button>
-                </Popover>
-              </Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.VirtualBody>
-      </Table>
-    </Pane>
+                <Table.TextCell>
+                  <StatusIndicator
+                    color={banner?.active ? "success" : "warning"}
+                  >
+                    {banner.name}
+                  </StatusIndicator>
+                </Table.TextCell>
+
+                <Table.TextCell>
+                  <Badge color="neutral">{banner.type}</Badge>
+                </Table.TextCell>
+
+                <Table.TextCell>
+                  <Popover
+                    content={
+                      <Menu>
+                        <Menu.Group>
+                          <Menu.Item
+                            onSelect={() => {
+                              setSelectedBanner(banner);
+                              setIsSideSheetShown(true);
+                            }}
+                          >
+                            Editar
+                          </Menu.Item>
+                          <Menu.Item
+                            onSelect={() => {
+                              setIsDeletePromptShown(true);
+                              setSelectedBanner(banner);
+                            }}
+                          >
+                            Eliminar
+                          </Menu.Item>
+                        </Menu.Group>
+                      </Menu>
+                    }
+                  >
+                    <Button>
+                      <MoreIcon />
+                    </Button>
+                  </Popover>
+                </Table.TextCell>
+              </Table.Row>
+            ))}
+          </Table.VirtualBody>
+        </Table>
+      </Pane>
+    </main>
   );
 };
 

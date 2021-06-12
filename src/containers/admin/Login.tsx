@@ -26,44 +26,46 @@ const Login: FunctionComponent = () => {
   };
 
   return (
-    <Pane maxWidth={500} width="80%" margin="auto" marginTop={20}>
-      <Heading marginBottom="40px">Iniciar Sesión</Heading>
-      <Pane textAlign="left">
-        <TextInputField
-          isInvalid={!email}
-          required
-          label="Correo electrónico"
-          validationMessage={!email ? "Campo es requerido" : null}
-          value={email}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setEmail(event.target.value)
-          }
-        />
+    <main>
+      <Pane maxWidth={500} width="80%" margin="auto" marginTop={20}>
+        <Heading marginBottom="40px">Iniciar Sesión</Heading>
+        <Pane textAlign="left">
+          <TextInputField
+            isInvalid={!email}
+            required
+            label="Correo electrónico"
+            validationMessage={!email ? "Campo es requerido" : null}
+            value={email}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(event.target.value)
+            }
+          />
+        </Pane>
+        <Pane textAlign="left">
+          <TextInputField
+            isInvalid={!password}
+            required
+            label="Contraseña"
+            validationMessage={!password ? "Contraseña es requerida" : null}
+            type="password"
+            value={password}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setPassword(event.target.value)
+            }
+          />
+        </Pane>
+        <Pane textAlign="center">
+          <Button
+            isLoading={loadingLogin}
+            onClick={handleLoginForm}
+            disabled={!email || !password}
+            appearance="primary"
+          >
+            Iniciar
+          </Button>
+        </Pane>
       </Pane>
-      <Pane textAlign="left">
-        <TextInputField
-          isInvalid={!password}
-          required
-          label="Contraseña"
-          validationMessage={!password ? "Contraseña es requerida" : null}
-          type="password"
-          value={password}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setPassword(event.target.value)
-          }
-        />
-      </Pane>
-      <Pane textAlign="center">
-        <Button
-          isLoading={loadingLogin}
-          onClick={handleLoginForm}
-          disabled={!email || !password}
-          appearance="primary"
-        >
-          Iniciar
-        </Button>
-      </Pane>
-    </Pane>
+    </main>
   );
 };
 

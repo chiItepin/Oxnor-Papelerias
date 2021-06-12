@@ -148,138 +148,140 @@ const Products: FunctionComponent = () => {
   }
 
   return (
-    <Pane textAlign="left">
-      <Dialog
-        isShown={isDeletePromptShown}
-        title="Eliminar producto"
-        intent="danger"
-        onCloseComplete={() => setIsDeletePromptShown(false)}
-        cancelLabel="Cancelar"
-        confirmLabel="Eliminar"
-        onConfirm={() => deleteProduct()}
-      >
-        Estás seguro que deseas eliminar {selectedProduct?.name}
-      </Dialog>
-      <Sidesheet
-        title={selectedProduct?.key ? "Editar Producto" : "Añadir Producto"}
-        isShown={isSideSheetShown}
-        handleOnClose={() => {
-          setIsSideSheetShown(false);
-        }}
-      >
-        <ProductForm
-          product={selectedProduct}
-          submitProduct={submitProduct}
-          setSelectedProduct={setSelectedProduct}
-          handleImageUpload={handleImageUpload}
-          loading={loading}
-          categories={categories}
-        />
-      </Sidesheet>
-
-      <Pane
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        marginBottom={10}
-      >
-        <Button
-          onClick={() => {
-            resetSelectedProduct();
-            setIsSideSheetShown(true);
+    <main>
+      <Pane textAlign="left">
+        <Dialog
+          isShown={isDeletePromptShown}
+          title="Eliminar producto"
+          intent="danger"
+          onCloseComplete={() => setIsDeletePromptShown(false)}
+          cancelLabel="Cancelar"
+          confirmLabel="Eliminar"
+          onConfirm={() => deleteProduct()}
+        >
+          Estás seguro que deseas eliminar {selectedProduct?.name}
+        </Dialog>
+        <Sidesheet
+          title={selectedProduct?.key ? "Editar Producto" : "Añadir Producto"}
+          isShown={isSideSheetShown}
+          handleOnClose={() => {
+            setIsSideSheetShown(false);
           }}
         >
-          Añadir nuevo producto
-        </Button>
-
-        <Heading>Productos</Heading>
-      </Pane>
-
-      <Table>
-        <Table.Head>
-          <Table.SearchHeaderCell
-            value={searchValue}
-            onChange={(event) => setSearchValue(event)}
-            placeholder="Buscar..."
+          <ProductForm
+            product={selectedProduct}
+            submitProduct={submitProduct}
+            setSelectedProduct={setSelectedProduct}
+            handleImageUpload={handleImageUpload}
+            loading={loading}
+            categories={categories}
           />
-          <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Destacado</Table.TextHeaderCell>
-          <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
-        </Table.Head>
-        {handleSearch().length === 0 && (
-          <Heading marginTop={10} textAlign="center">
-            Datos no encontrados
-          </Heading>
-        )}
-        <Table.VirtualBody
-          minHeight={400}
-          height="auto"
-          allowAutoHeight
-          useAverageAutoHeightEstimation
+        </Sidesheet>
+
+        <Pane
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          marginBottom={10}
         >
-          {handleSearch().map((product) => (
-            <Table.Row key={product.key}>
-              <Table.TextCell>
-                <Avatar
-                  src={product.image ? product.image : undefined}
-                  name={product.name}
-                  size={30}
-                />
-              </Table.TextCell>
-              <Table.TextCell>
-                <StatusIndicator
-                  color={product?.active ? "success" : "warning"}
-                >
-                  {product.name}
-                </StatusIndicator>
-              </Table.TextCell>
-              <Table.TextCell>{product.description}</Table.TextCell>
-              <Table.TextCell>
-                {product.featured ? <StarIcon /> : <StarEmptyIcon />}
-              </Table.TextCell>
-              <Table.TextCell>
-                <Popover
-                  content={
-                    <Menu>
-                      <Menu.Group>
-                        <Menu.Item
-                          onSelect={() => {
-                            setSelectedProduct(product);
-                            setIsSideSheetShown(true);
-                          }}
-                        >
-                          Editar
-                        </Menu.Item>
-                        <Menu.Item
-                          onSelect={() => {
-                            handleCloneProduct(product);
-                          }}
-                        >
-                          Clonar
-                        </Menu.Item>
-                        <Menu.Item
-                          onSelect={() => {
-                            setIsDeletePromptShown(true);
-                            setSelectedProduct(product);
-                          }}
-                        >
-                          Eliminar
-                        </Menu.Item>
-                      </Menu.Group>
-                    </Menu>
-                  }
-                >
-                  <Button>
-                    <MoreIcon />
-                  </Button>
-                </Popover>
-              </Table.TextCell>
-            </Table.Row>
-          ))}
-        </Table.VirtualBody>
-      </Table>
-    </Pane>
+          <Button
+            onClick={() => {
+              resetSelectedProduct();
+              setIsSideSheetShown(true);
+            }}
+          >
+            Añadir nuevo producto
+          </Button>
+
+          <Heading>Productos</Heading>
+        </Pane>
+
+        <Table>
+          <Table.Head>
+            <Table.SearchHeaderCell
+              value={searchValue}
+              onChange={(event) => setSearchValue(event)}
+              placeholder="Buscar..."
+            />
+            <Table.TextHeaderCell>Nombre</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Descripción</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Destacado</Table.TextHeaderCell>
+            <Table.TextHeaderCell>Acción</Table.TextHeaderCell>
+          </Table.Head>
+          {handleSearch().length === 0 && (
+            <Heading marginTop={10} textAlign="center">
+              Datos no encontrados
+            </Heading>
+          )}
+          <Table.VirtualBody
+            minHeight={400}
+            height="auto"
+            allowAutoHeight
+            useAverageAutoHeightEstimation
+          >
+            {handleSearch().map((product) => (
+              <Table.Row key={product.key}>
+                <Table.TextCell>
+                  <Avatar
+                    src={product.image ? product.image : undefined}
+                    name={product.name}
+                    size={30}
+                  />
+                </Table.TextCell>
+                <Table.TextCell>
+                  <StatusIndicator
+                    color={product?.active ? "success" : "warning"}
+                  >
+                    {product.name}
+                  </StatusIndicator>
+                </Table.TextCell>
+                <Table.TextCell>{product.description}</Table.TextCell>
+                <Table.TextCell>
+                  {product.featured ? <StarIcon /> : <StarEmptyIcon />}
+                </Table.TextCell>
+                <Table.TextCell>
+                  <Popover
+                    content={
+                      <Menu>
+                        <Menu.Group>
+                          <Menu.Item
+                            onSelect={() => {
+                              setSelectedProduct(product);
+                              setIsSideSheetShown(true);
+                            }}
+                          >
+                            Editar
+                          </Menu.Item>
+                          <Menu.Item
+                            onSelect={() => {
+                              handleCloneProduct(product);
+                            }}
+                          >
+                            Clonar
+                          </Menu.Item>
+                          <Menu.Item
+                            onSelect={() => {
+                              setIsDeletePromptShown(true);
+                              setSelectedProduct(product);
+                            }}
+                          >
+                            Eliminar
+                          </Menu.Item>
+                        </Menu.Group>
+                      </Menu>
+                    }
+                  >
+                    <Button>
+                      <MoreIcon />
+                    </Button>
+                  </Popover>
+                </Table.TextCell>
+              </Table.Row>
+            ))}
+          </Table.VirtualBody>
+        </Table>
+      </Pane>
+    </main>
   );
 };
 

@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  position: relative;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -18,12 +20,15 @@ main {
   max-width: 1100px;
   overflow-x: hidden;
   margin: auto;
+  padding-top: 30px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.product-container-content {
+  text-align: center;
+}
+
+.product-container-content div {
+  max-width: 100%;
 }
 
 .App-header {
@@ -47,5 +52,27 @@ main {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  main {
+    padding: 10px 25px;
+  }
+
+  nav button:not(:last-child) {
+    display: none !important;
+  }
+
+  .product-container-row > .css-nil .css-nil {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin: 10px 0;
   }
 }

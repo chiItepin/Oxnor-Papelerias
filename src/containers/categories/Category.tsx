@@ -1,19 +1,29 @@
 import React, { FunctionComponent, useState, useEffect } from "react";
-import { Link as ReactRouterLink } from "react-router-dom";
-import { Spinner, Pane, Heading, Strong, Avatar, Link } from "evergreen-ui";
-import { ICategory, IBanner, IProduct } from "./admin/templates";
-import { categoriesRef, carouselBannersRef, productsRef } from "../firebase";
-import MainBanners from "../components/home/MainBanners";
+import { useParams } from "react-router-dom";
+import { Spinner, Pane, Heading, Strong, Avatar } from "evergreen-ui";
+import { ICategory, IBanner, IProduct } from "../admin/templates";
+import { categoryRef, carouselBannersRef, productsRef } from "../../firebase";
+import MainBanners from "../../components/home/MainBanners";
 
-const Home: FunctionComponent = () => {
+interface IParamTypes {
+  key: string;
+}
+
+const Category: FunctionComponent = () => {
   const [banners, setBanners] = useState<IBanner[]>([]);
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [category, setCategory] = useState<ICategory>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loadingBanners, setLoadingBanners] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const { key } = useParams<IParamTypes>();
 
   const getMainCarouselBanners = (): IBanner[] =>
-    banners.filter((banner) => banner.active && banner.type === "carousel");
+    banners.filter(
+      (banner) =>
+        banner.active &&
+        banner.type === "category-view" &&
+        banner.categories.includes(key as never)
+    );
 
   const getCategoryProducts = (categoryKey: string): IProduct[] => {
     return products.filter((item) => item.categories.includes(categoryKey));
@@ -35,20 +45,6 @@ const Home: FunctionComponent = () => {
       });
   };
 
-  const getCategories = (): void => {
-    categoriesRef()
-      .orderByChild("created_at")
-      .on("value", (snapshot: any) => {
-        const updated: ICategory[] = [];
-        snapshot.forEach((item: any) => {
-          const temp = item.val();
-          temp.key = item.key;
-          updated.unshift(temp);
-        });
-        setCategories(updated);
-      });
-  };
-
   const getProducts = (): void => {
     setLoadingProducts(true);
     productsRef()
@@ -63,20 +59,33 @@ const Home: FunctionComponent = () => {
             updated.unshift(temp);
           }
         });
-        setProducts(updated.slice(0, 6));
+        setProducts(updated);
       });
   };
 
   useEffect(() => {
     getBanners();
-    getCategories();
     getProducts();
     return () => {
       carouselBannersRef().off();
-      categoriesRef().off();
       productsRef().off();
     };
   }, []);
+
+  useEffect(() => {
+    const getCategory = (): void => {
+      categoryRef(key)
+        .orderByChild("created_at")
+        .on("value", (snapshot: any) => {
+          setCategory(snapshot.val());
+        });
+    };
+
+    getCategory();
+    return () => {
+      categoryRef(key).off();
+    };
+  }, [key]);
 
   if (loadingBanners || loadingProducts) {
     return <Spinner margin="auto" />;
@@ -86,22 +95,14 @@ const Home: FunctionComponent = () => {
     <>
       <MainBanners banners={getMainCarouselBanners()} />
       <main>
-        {categories.map((cat) => (
-          <React.Fragment key={cat.key}>
-            <Pane marginX={10} textAlign="left" width="100%" marginY={30}>
-              <Heading size={600}>
-                <Link
-                  size={600}
-                  is={ReactRouterLink}
-                  to={`categorias/${cat.key}`}
-                >
-                  {cat.name}
-                </Link>
-              </Heading>
-              {cat.description && <Strong>{cat.description}</Strong>}
+        {category && (
+          <React.Fragment key={key}>
+            <Pane marginX={10} textAlign="center" width="100%" marginY={30}>
+              <Heading size={600}>{category.name}</Heading>
+              <Strong>{category.description}</Strong>
             </Pane>
             <div className="product-container-row">
-              {cat.key && getCategoryProducts(cat.key).length === 0 && (
+              {key && getCategoryProducts(key).length === 0 && (
                 <Strong>Aún no hay productos</Strong>
               )}
               <Pane
@@ -113,8 +114,8 @@ const Home: FunctionComponent = () => {
                 flexWrap="wrap"
                 marginY={10}
               >
-                {cat.key &&
-                  getCategoryProducts(cat.key).map((prod) => (
+                {key &&
+                  getCategoryProducts(key).map((prod) => (
                     <Pane
                       flex="0 0 33%"
                       elevation={2}
@@ -157,10 +158,10 @@ const Home: FunctionComponent = () => {
               </Pane>
             </div>
           </React.Fragment>
-        ))}
+        )}
       </main>
     </>
   );
 };
 
-export default Home;
+export default Category;

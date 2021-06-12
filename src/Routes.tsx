@@ -7,6 +7,7 @@ import Categories from "./containers/admin/Categories";
 import Products from "./containers/admin/Products";
 import Carousel from "./containers/admin/Carousel";
 import Home from "./containers/Home";
+import HomeCategory from "./containers/categories/Category";
 
 const Routes: FunctionComponent = () => {
   const { user, loaded } = useContext(FirebaseContext);
@@ -14,6 +15,7 @@ const Routes: FunctionComponent = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
+      <Route exact path="/categorias/:key" component={HomeCategory} />
       <Route path="/admin/login" component={Login} />
       <PrivateRoute user={user} loaded={loaded} exact path="/admin/categorias">
         <Categories />
