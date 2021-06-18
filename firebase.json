@@ -1,12 +1,13 @@
 {
   "hosting": {
+    "site": "oxnor-papelerias",
     "public": "build",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
-  },
-  "database": {
-    "rules": "database.rules.json"
-  },
-  "storage": {
-    "rules": "storage.rules"
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

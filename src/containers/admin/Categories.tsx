@@ -77,8 +77,10 @@ const Categories: FunctionComponent = () => {
   };
 
   const submitCategory = () => {
+    const newCategory = selectedCategory;
+    newCategory.created_at = Date.now().toString();
     categoryRef(selectedCategory?.key ? selectedCategory.key : null)
-      .set(selectedCategory)
+      .set(newCategory)
       .then(() => {
         if (selectedCategory?.key) {
           toaster.success("Categoría actualizada con éxito");

@@ -3,6 +3,7 @@ export interface ICategory {
   description: string;
   image: string | null;
   featured: boolean;
+  created_at?: string;
   key?: string;
 }
 
@@ -11,6 +12,7 @@ export const categoryTemplate: ICategory = {
   description: "",
   image: null,
   featured: false,
+  created_at: "",
 };
 
 export interface IProduct {
