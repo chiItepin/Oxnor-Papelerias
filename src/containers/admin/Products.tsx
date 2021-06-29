@@ -113,8 +113,10 @@ const Products: FunctionComponent = () => {
   };
 
   const submitProduct = () => {
+    const updated = { ...selectedProduct };
+    updated.lowercaseName = updated.name.toLowerCase();
     productRef(selectedProduct?.key ? selectedProduct.key : null)
-      .set(selectedProduct)
+      .set(updated)
       .then(() => {
         if (selectedProduct?.key) {
           toaster.success("Producto actualizado con éxito");

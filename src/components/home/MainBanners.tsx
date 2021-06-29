@@ -11,12 +11,14 @@ interface IProps {
 const MainBanners: FunctionComponent<IProps> = ({ banners }: IProps) => {
   return (
     <>
+      <div className="carousel-after" />
       {banners.length !== 0 && (
         <Carousel
           showArrows
           swipeable
           autoPlay
           dynamicHeight
+          infiniteLoop
           showThumbs={false}
         >
           {banners.map((banner) => (

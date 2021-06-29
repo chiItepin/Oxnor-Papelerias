@@ -15,6 +15,7 @@ const Sidesheet: FunctionComponent<IProps> = ({
   children,
 }: IProps) => (
   <SideSheet
+    width={300}
     isShown={isShown}
     onCloseComplete={() => handleOnClose()}
     containerProps={{

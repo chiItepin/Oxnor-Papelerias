@@ -89,7 +89,7 @@ const BannerForm: FunctionComponent<IProps> = ({
               label={category.name}
               checked={
                 category.key
-                  ? !!banner.categories.includes(category.key as never)
+                  ? !!banner?.categories?.includes(category.key as never)
                   : false
               }
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>

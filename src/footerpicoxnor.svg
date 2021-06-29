@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1890.098" height="719.198" viewBox="0 0 1890.098 719.198">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="0.382" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#bcf4ff" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.5" y1="-0.101" x2="0.5" y2="1.043" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#6efbbf" stop-opacity="0.902"/>
+      <stop offset="1" stop-color="#58b0fb" stop-opacity="0.902"/>
+    </linearGradient>
+  </defs>
+  <g id="bg" transform="translate(-11.902 -9.941)">
+    <path id="wave" d="M0,0H575.268s176.686,161.16,90.445,357.073-219.293,27.542-305.432,226.6S0,644.055,0,644.055Z" transform="translate(1902 701) rotate(-180)" fill="#a4edce"/>
+    <path id="Rectangle_3" data-name="Rectangle 3" d="M41.809,114.343A100,100,0,0,1,174.062,47.336l81.154,31.108a100,100,0,0,1,64.162,96.407l-.8,26.5-35.8,36.138a100,100,0,0,1-102,24.708l-74.086-24.122a100,100,0,0,1-65.5-121.455Z" transform="translate(613 582) rotate(-180)" fill="url(#linear-gradient)"/>
+    <path id="Rectangle_3-2" data-name="Rectangle 3" d="M97.186,119.146A100,100,0,0,1,228.849,52.34L506.406,157.088a100,100,0,0,1,64.644,96.639l-3.072,99.715L469.922,450.89a100,100,0,0,1-101.017,24.3L120.165,395.45A100,100,0,0,1,54.337,273.47Z" transform="translate(583 775) rotate(-180)" fill="url(#linear-gradient-2)"/>
+  </g>
+</svg>

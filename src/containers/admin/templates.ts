@@ -17,6 +17,7 @@ export const categoryTemplate: ICategory = {
 
 export interface IProduct {
   name: string;
+  lowercaseName: string;
   description: string;
   image: string | null;
   featured: boolean;
@@ -32,6 +33,7 @@ export interface IProduct {
 
 export const productTemplate: IProduct = {
   name: "",
+  lowercaseName: "",
   description: "",
   image: null,
   featured: false,
